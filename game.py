@@ -10,7 +10,7 @@ RED = (255, 0, 0)
 size = (700, 500)
 screen = pygame.display.set_mode(size)
 
-pygame.display.set_caption("Professor Craven's Cool Game")
+pygame.display.set_caption("My very basic Pong game")
 
 # Loop until the user clicks the close button.
 done = False
