@@ -10,6 +10,10 @@ RED = (255, 0, 0)
 size = (700, 500)
 screen = pygame.display.set_mode(size)
 
+PADDLE_WIDTH = 10
+# the X coord of the right paddle
+RIGHT_PADDLE_X = 690
+
 pygame.display.set_caption("My very basic Pong game")
 
 # Loop until the user clicks the close button.
@@ -19,11 +23,16 @@ clock = pygame.time.Clock()
 # -------- Main Program Loop -----------
 
 # Speed in pixels per frame
-x_speed = 0
-y_speed = 0
+speed = 0
 # Current position
-x_coord = 10
-y_coord = 10
+topY_coord = 200
+bottomY_coord = 300
+
+def drawPaddle(topX, topY, bottomX, bottomY):
+    pygame.draw.line(screen, WHITE, [topX, topY], [bottomX, bottomY], PADDLE_WIDTH)
+
+def drawRightPaddle(topY, bottomY):
+    drawPaddle(RIGHT_PADDLE_X, topY, RIGHT_PADDLE_X, bottomY)
 
 while not done:
     # --- Limit to 60 frames per second
@@ -32,15 +41,28 @@ while not done:
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
             done = True  # Flag that we are done so we exit this loop
-    # --- Game logic should go here
-
-    # --- Drawing code should go here
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                print('go up')
+                speed = -5
+                print(speed)
+            elif event.key == pygame.K_DOWN:
+                print('go down')
+                speed = 5
+                print(speed)
+        elif event.type == pygame.KEYUP:
+            speed = 0
+            print(speed)
 
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
     screen.fill(BLACK)
-    # Draw on the screen a green line from (0, 0) to (100, 100)
-    # that is 5 pixels wide.
-    pygame.draw.line(screen, WHITE, [690, 200], [690, 300], 10)
+
+    topY_coord += speed
+    bottomY_coord += speed
+
+
+
+    drawRightPaddle(topY_coord, bottomY_coord)
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
