@@ -3,7 +3,11 @@ import pygame
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-size = (700, 500)
+# screen dimensions
+MAX_WIDTH = 700
+MAX_HEIGHT = 500
+
+size = (MAX_WIDTH, MAX_HEIGHT)
 
 # Paddle constants
 PADDLE_WIDTH = 10
@@ -16,7 +20,7 @@ PADDLE_MAX_Y = 500
 PADDLE_SPEED = 5
 
 # Ball constants
-BALL_DIMENSION = 10
+BALL_DIMENSION = 6
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -33,11 +37,11 @@ topY_coord = 200
 bottomY_coord = 300
 
 # Starting position of the rectangle
-rect_x = 50
-rect_y = 50
+ball_x = 300
+ball_y = 300
 # Speed and direction of rectangle
-rect_change_x = 4
-rect_change_y = 4
+ball_change_x = 4
+ball_change_y = 4
 
 def drawPaddle(topX, topY, bottomX, bottomY):
     # TODO check how this works with rectangle instead
@@ -68,17 +72,11 @@ while not done:
             done = True  # Flag that we are done so we exit this loop
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                print('go up')
                 speed = -PADDLE_SPEED
-                print(speed)
             elif event.key == pygame.K_DOWN:
-                print('go down')
                 speed = PADDLE_SPEED
-                print(speed)
         elif event.type == pygame.KEYUP:
             speed = 0
-            print('key released')
-            print(speed)
 
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
@@ -87,15 +85,18 @@ while not done:
     topY_coord, bottomY_coord = movePaddleBySpeed(topY_coord, bottomY_coord, speed)
     drawRightPaddle(topY_coord, bottomY_coord)
 
-    pygame.draw.rect(screen, WHITE, [rect_x, rect_y, BALL_DIMENSION, BALL_DIMENSION])
+    pygame.draw.circle(screen, WHITE, (ball_x, ball_y), BALL_DIMENSION, 0)
 
-    rect_x += rect_change_x
-    rect_y += rect_change_y
+    ball_x += ball_change_x
+    ball_y += ball_change_y
+
     # Bounce the rectangle if needed
-    if rect_y > 490 or rect_y < 0:
-        rect_change_y = rect_change_y * -1
-    if rect_x > 690 or rect_x < 0:
-        rect_change_x = rect_change_x * -1
+    if ball_y > MAX_HEIGHT - BALL_DIMENSION or ball_y < 0:
+        print('almost off edge vertically', ball_y, 'need to go', 'up' if ball_y > MAX_HEIGHT - BALL_DIMENSION else 'down')
+        ball_change_y = ball_change_y * -1
+    if ball_x > MAX_WIDTH - BALL_DIMENSION or ball_x < 0:
+        print('almost off edge horizontally', ball_x, 'need to go', 'left' if ball_x > MAX_WIDTH - BALL_DIMENSION else 'right')
+        ball_change_x = ball_change_x * -1
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
