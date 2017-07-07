@@ -5,14 +5,18 @@ WHITE = (255, 255, 255)
 
 size = (700, 500)
 
+# Paddle constants
 PADDLE_WIDTH = 10
 PADDLE_HEIGHT = 100
 # the X coord of the right paddle
-RIGHT_PADDLE_X = 690
+RIGHT_PADDLE_X = 695
 PADDLE_MIN_Y = 0
 PADDLE_MAX_Y = 500
 # the speed with which we move the paddle
 PADDLE_SPEED = 5
+
+# Ball constants
+BALL_DIMENSION = 10
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -28,7 +32,15 @@ speed = 0
 topY_coord = 200
 bottomY_coord = 300
 
+# Starting position of the rectangle
+rect_x = 50
+rect_y = 50
+# Speed and direction of rectangle
+rect_change_x = 4
+rect_change_y = 4
+
 def drawPaddle(topX, topY, bottomX, bottomY):
+    # TODO check how this works with rectangle instead
     pygame.draw.line(screen, WHITE, [topX, topY], [bottomX, bottomY], PADDLE_WIDTH)
 
 def drawRightPaddle(topY, bottomY):
@@ -74,5 +86,16 @@ while not done:
 
     topY_coord, bottomY_coord = movePaddleBySpeed(topY_coord, bottomY_coord, speed)
     drawRightPaddle(topY_coord, bottomY_coord)
+
+    pygame.draw.rect(screen, WHITE, [rect_x, rect_y, BALL_DIMENSION, BALL_DIMENSION])
+
+    rect_x += rect_change_x
+    rect_y += rect_change_y
+    # Bounce the rectangle if needed
+    if rect_y > 490 or rect_y < 0:
+        rect_change_y = rect_change_y * -1
+    if rect_x > 690 or rect_x < 0:
+        rect_change_x = rect_change_x * -1
+
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
