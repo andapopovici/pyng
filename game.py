@@ -1,4 +1,5 @@
 import pygame
+import random
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -36,12 +37,14 @@ speed = 0
 topY_coord = 200
 bottomY_coord = 300
 
-# Starting position of the rectangle
-ball_x = 300
-ball_y = 300
+# Starting position of the ball
+ball_x = 0
+ball_y = random.randint(100, 350)
+
+print("initial ball position ", ball_x, ball_y)
 # Speed and direction of rectangle
-ball_change_x = 4
-ball_change_y = 4
+ball_change_x = 5
+ball_change_y = 5
 
 def drawPaddle(topX, topY, bottomX, bottomY):
     # TODO check how this works with rectangle instead
