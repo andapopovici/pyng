@@ -12,11 +12,11 @@ size = (MAX_WIDTH, MAX_HEIGHT)
 
 # Paddle constants
 PADDLE_WIDTH = 10
-PADDLE_HEIGHT = 100
+PADDLE_HEIGHT = 90
 # the X coord of the right paddle
-RIGHT_PADDLE_X = 690
+RIGHT_PADDLE_X = MAX_WIDTH - PADDLE_WIDTH
 PADDLE_MIN_Y = 0
-PADDLE_MAX_Y = 400
+PADDLE_MAX_Y = MAX_HEIGHT - PADDLE_HEIGHT
 # the speed with which we move the paddle
 PADDLE_SPEED = 5
 
@@ -63,6 +63,10 @@ def movePaddleBySpeed(topY_coord, speed):
 
     return topY_coord
 
+def drawMiddleLine():
+    pygame.draw.line(screen, WHITE, [MAX_WIDTH / 2, 0], [MAX_WIDTH / 2, MAX_HEIGHT], 1)
+
+score = 0
 while not done:
     # --- Limit to 60 frames per second
     clock.tick(60)
@@ -83,6 +87,8 @@ while not done:
     # above this, or they will be erased with this command.
     screen.fill(BLACK)
 
+    drawMiddleLine()
+
     topY_coord = movePaddleBySpeed(topY_coord, speed)
     drawRightPaddle(topY_coord)
 
@@ -93,9 +99,17 @@ while not done:
 
     # Bounce the rectangle if needed
     if ball_y > MAX_HEIGHT - BALL_DIMENSION or ball_y < 0:
-        ball_change_y = ball_change_y * -1
+        ball_change_y *= -1
     if ball_x > MAX_WIDTH - PADDLE_WIDTH or ball_x < 0:
-        ball_change_x = ball_change_x * -1
+        ball_change_x *= -1
+        if ball_x > MAX_WIDTH - PADDLE_WIDTH:
+            print("hit right edge", ball_y)
+            if ball_y >= topY_coord and ball_y <= topY_coord + PADDLE_HEIGHT:
+                score += 1
+                print("SCORE ", score)
+            else:
+                score = 0
+                print("YOU LOSE")
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
