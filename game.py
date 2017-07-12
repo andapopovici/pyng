@@ -33,11 +33,11 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 # Speed in pixels per frame
-speed = 0
+speedRightPaddle = 0
+speedLeftPaddle = 0
 # Current position
-topY_coord = 200
-bottomY_coord = 300
-
+rightPaddle_y = 200
+leftPaddle_y = 200
 # Starting position of the ball
 ball_x = 0
 ball_y = random.randint(100, 350)
@@ -53,21 +53,26 @@ def drawPaddle(topX, topY):
 def drawRightPaddle(topY):
     drawPaddle(RIGHT_PADDLE_X, topY)
 
-def movePaddleBySpeed(topY_coord, speed):
-    topY_coord += speed
+def drawLeftPaddle(y):
+    drawPaddle(0, y)
 
-    if topY_coord < PADDLE_MIN_Y:
-        topY_coord = PADDLE_MIN_Y
+def movePaddleBySpeed(yCoord, speed):
+    yCoord += speed
 
-    if topY_coord > PADDLE_MAX_Y:
-        topY_coord = PADDLE_MAX_Y
+    if yCoord < PADDLE_MIN_Y:
+        yCoord = PADDLE_MIN_Y
 
-    return topY_coord
+    if yCoord > PADDLE_MAX_Y:
+        yCoord = PADDLE_MAX_Y
+
+    return yCoord
 
 def drawMiddleLine():
     pygame.draw.line(screen, WHITE, [MAX_WIDTH / 2, 0], [MAX_WIDTH / 2, MAX_HEIGHT], 1)
 
-score = 0
+scoreRight = 0
+scoreLeft = 0
+
 myfont = pygame.font.SysFont('monospace', 30)
 
 while not done:
@@ -80,23 +85,33 @@ while not done:
             done = True  # Flag that we are done so we exit this loop
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                speed = -PADDLE_SPEED
+                speedRightPaddle = -PADDLE_SPEED
             elif event.key == pygame.K_DOWN:
-                speed = PADDLE_SPEED
+                speedRightPaddle = PADDLE_SPEED
+            elif event.key == pygame.K_w:
+                speedLeftPaddle = -PADDLE_SPEED
+            elif event.key == pygame.K_s:
+                speedLeftPaddle = PADDLE_SPEED
         elif event.type == pygame.KEYUP:
-            speed = 0
+            speedRightPaddle = 0
+            speedLeftPaddle = 0
 
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
     screen.fill(BLACK)
 
-    textsurface = myfont.render(str(score), True, WHITE)
-    screen.blit(textsurface, (370,10))
+    rightScoreTextSurface = myfont.render(str(scoreRight), True, WHITE)
+    screen.blit(rightScoreTextSurface, (370, 10))
+
+    leftScoreTextSurface = myfont.render(str(scoreLeft), True, WHITE)
+    screen.blit(leftScoreTextSurface, (310, 10))
 
     drawMiddleLine()
 
-    topY_coord = movePaddleBySpeed(topY_coord, speed)
-    drawRightPaddle(topY_coord)
+    rightPaddle_y = movePaddleBySpeed(rightPaddle_y, speedRightPaddle)
+    drawRightPaddle(rightPaddle_y)
+    leftPaddle_y = movePaddleBySpeed(leftPaddle_y, speedLeftPaddle)
+    drawLeftPaddle(leftPaddle_y)
 
     pygame.draw.circle(screen, WHITE, (ball_x, ball_y), BALL_DIMENSION, 0)
 
@@ -110,12 +125,16 @@ while not done:
         ball_change_x *= -1
         if ball_x > MAX_WIDTH - PADDLE_WIDTH:
             print("hit right edge", ball_y)
-            if ball_y >= topY_coord and ball_y <= topY_coord + PADDLE_HEIGHT:
-                score += 1
-                print("SCORE ", score)
+            if ball_y >= rightPaddle_y and ball_y <= rightPaddle_y + PADDLE_HEIGHT:
+                scoreRight += 1
             else:
-                score = 0
-                print("YOU LOSE")
+                scoreRight = 0
+        else:
+            print("hit right edge", ball_y)
+            if ball_y >= leftPaddle_y and ball_y <= leftPaddle_y + PADDLE_HEIGHT:
+                scoreLeft += 1
+            else:
+                scoreLeft = 0
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
