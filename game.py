@@ -39,7 +39,7 @@ speedLeftPaddle = 0
 rightPaddle_y = 200
 leftPaddle_y = 200
 # Starting position of the ball
-ball_x = 0
+ball_x = 10
 ball_y = random.randint(100, 350)
 
 print("initial ball position ", ball_x, ball_y)
@@ -121,7 +121,7 @@ while not done:
     # Bounce the rectangle if needed
     if ball_y > MAX_HEIGHT - BALL_DIMENSION or ball_y < 0:
         ball_change_y *= -1
-    if ball_x > MAX_WIDTH - PADDLE_WIDTH or ball_x < 0:
+    if ball_x > MAX_WIDTH - PADDLE_WIDTH or ball_x < 10:
         ball_change_x *= -1
         if ball_x > MAX_WIDTH - PADDLE_WIDTH:
             print("hit right edge", ball_y)
