@@ -100,11 +100,11 @@ while not done:
     # above this, or they will be erased with this command.
     screen.fill(BLACK)
 
-    rightScoreTextSurface = myfont.render(str(scoreRight), True, WHITE)
+    rightScoreTextSurface = myfont.render("P2 " + str(scoreRight), True, WHITE)
     screen.blit(rightScoreTextSurface, (370, 10))
 
-    leftScoreTextSurface = myfont.render(str(scoreLeft), True, WHITE)
-    screen.blit(leftScoreTextSurface, (310, 10))
+    leftScoreTextSurface = myfont.render("P1 " + str(scoreLeft), True, WHITE)
+    screen.blit(leftScoreTextSurface, (260, 10))
 
     drawMiddleLine()
 
@@ -124,17 +124,22 @@ while not done:
     if ball_x > MAX_WIDTH - PADDLE_WIDTH or ball_x < 10:
         ball_change_x *= -1
         if ball_x > MAX_WIDTH - PADDLE_WIDTH:
-            print("hit right edge", ball_y)
             if ball_y >= rightPaddle_y and ball_y <= rightPaddle_y + PADDLE_HEIGHT:
                 scoreRight += 1
             else:
+                # winner - Left player
+                print("Player 1 wins - restart")
+                scoreLeft = 0
                 scoreRight = 0
+
         else:
             print("hit right edge", ball_y)
             if ball_y >= leftPaddle_y and ball_y <= leftPaddle_y + PADDLE_HEIGHT:
                 scoreLeft += 1
             else:
+                print("Player 2 wins - restart")
                 scoreLeft = 0
+                scoreRight = 0
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
