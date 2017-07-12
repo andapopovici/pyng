@@ -24,6 +24,7 @@ PADDLE_SPEED = 5
 BALL_DIMENSION = 5
 
 pygame.init()
+pygame.font.init()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("My very basic Pong game")
 
@@ -67,6 +68,8 @@ def drawMiddleLine():
     pygame.draw.line(screen, WHITE, [MAX_WIDTH / 2, 0], [MAX_WIDTH / 2, MAX_HEIGHT], 1)
 
 score = 0
+myfont = pygame.font.SysFont('monospace', 30)
+
 while not done:
     # --- Limit to 60 frames per second
     clock.tick(60)
@@ -86,6 +89,9 @@ while not done:
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
     screen.fill(BLACK)
+
+    textsurface = myfont.render(str(score), True, WHITE)
+    screen.blit(textsurface, (370,10))
 
     drawMiddleLine()
 
