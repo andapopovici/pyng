@@ -1,5 +1,7 @@
 import pygame
 import random
+
+from Ball import Ball
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -38,14 +40,18 @@ speedLeftPaddle = 0
 # Current position
 rightPaddle_y = 200
 leftPaddle_y = 200
-# Starting position of the ball
-ball_x = 10
-ball_y = random.randint(100, 350)
 
-print("initial ball position ", ball_x, ball_y)
-# Speed and direction of rectangle
-ball_change_x = 5
-ball_change_y = 5
+ball = Ball(BALL_DIMENSION,
+            10,
+            random.randint(100, 350),
+            10,
+            MAX_WIDTH - PADDLE_WIDTH,
+            0,
+            MAX_HEIGHT - BALL_DIMENSION,
+            5,
+            5)
+
+print("initial ball position ", ball.x, ball.y)
 
 def drawPaddle(topX, topY):
     pygame.draw.rect(screen, WHITE, [topX, topY, PADDLE_WIDTH, PADDLE_HEIGHT])
@@ -100,11 +106,11 @@ while not done:
     # above this, or they will be erased with this command.
     screen.fill(BLACK)
 
-    rightScoreTextSurface = myfont.render("P2 " + str(scoreRight), True, WHITE)
+    rightScoreTextSurface = myfont.render(str(scoreRight), True, WHITE)
     screen.blit(rightScoreTextSurface, (370, 10))
 
-    leftScoreTextSurface = myfont.render("P1 " + str(scoreLeft), True, WHITE)
-    screen.blit(leftScoreTextSurface, (260, 10))
+    leftScoreTextSurface = myfont.render(str(scoreLeft), True, WHITE)
+    screen.blit(leftScoreTextSurface, (300, 10))
 
     drawMiddleLine()
 
@@ -113,33 +119,26 @@ while not done:
     leftPaddle_y = movePaddleBySpeed(leftPaddle_y, speedLeftPaddle)
     drawLeftPaddle(leftPaddle_y)
 
-    pygame.draw.circle(screen, WHITE, (ball_x, ball_y), BALL_DIMENSION, 0)
+    pygame.draw.circle(screen, WHITE, (ball.x, ball.y), ball.dimension, 0)
 
-    ball_x += ball_change_x
-    ball_y += ball_change_y
+    ball.move()
 
-    # Bounce the rectangle if needed
-    if ball_y > MAX_HEIGHT - BALL_DIMENSION or ball_y < 0:
-        ball_change_y *= -1
-    if ball_x > MAX_WIDTH - PADDLE_WIDTH or ball_x < 10:
-        ball_change_x *= -1
-        if ball_x > MAX_WIDTH - PADDLE_WIDTH:
-            if ball_y >= rightPaddle_y and ball_y <= rightPaddle_y + PADDLE_HEIGHT:
-                scoreRight += 1
-            else:
-                # winner - Left player
-                print("Player 1 wins - restart")
-                scoreLeft = 0
-                scoreRight = 0
-
+    if ball.hitsRightEdge():
+        if ball.isWithinVerticalBounds(rightPaddle_y, rightPaddle_y + PADDLE_HEIGHT):
+            scoreRight += 1
         else:
-            print("hit right edge", ball_y)
-            if ball_y >= leftPaddle_y and ball_y <= leftPaddle_y + PADDLE_HEIGHT:
-                scoreLeft += 1
-            else:
-                print("Player 2 wins - restart")
-                scoreLeft = 0
-                scoreRight = 0
+            # winner - Left player
+            print("Player 1 wins - restart")
+            scoreLeft = 0
+            scoreRight = 0
+
+    if ball.hitsLeftEdge():
+        if ball.isWithinVerticalBounds(leftPaddle_y, leftPaddle_y + PADDLE_HEIGHT):
+            scoreLeft += 1
+        else:
+            print("Player 2 wins - restart")
+            scoreLeft = 0
+            scoreRight = 0
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
