@@ -2,6 +2,7 @@ import pygame
 import random
 
 from Ball import Ball
+from Paddle import Paddle
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -40,6 +41,22 @@ speedLeftPaddle = 0
 # Current position
 rightPaddle_y = 200
 leftPaddle_y = 200
+
+leftPaddle = Paddle(
+                MAX_WIDTH - PADDLE_WIDTH,
+                200,
+                PADDLE_MIN_Y,
+                MAX_HEIGHT - PADDLE_HEIGHT,
+                PADDLE_HEIGHT,
+                PADDLE_WIDTH)
+
+rightPaddle = Paddle(
+                0,
+                200,
+                PADDLE_MIN_Y,
+                MAX_HEIGHT - PADDLE_HEIGHT,
+                PADDLE_HEIGHT,
+                PADDLE_WIDTH)
 
 ball = Ball(BALL_DIMENSION,
             10,
@@ -95,9 +112,11 @@ while not done:
             elif event.key == pygame.K_DOWN:
                 speedRightPaddle = PADDLE_SPEED
             elif event.key == pygame.K_w:
-                speedLeftPaddle = -PADDLE_SPEED
+                #speedLeftPaddle = -PADDLE_SPEED
+                leftPaddle.move(-PADDLE_SPEED)
             elif event.key == pygame.K_s:
-                speedLeftPaddle = PADDLE_SPEED
+                #speedLeftPaddle = PADDLE_SPEED
+                leftPaddle.move(PADDLE_SPEED)
         elif event.type == pygame.KEYUP:
             speedRightPaddle = 0
             speedLeftPaddle = 0
@@ -114,10 +133,10 @@ while not done:
 
     drawMiddleLine()
 
-    rightPaddle_y = movePaddleBySpeed(rightPaddle_y, speedRightPaddle)
-    drawRightPaddle(rightPaddle_y)
-    leftPaddle_y = movePaddleBySpeed(leftPaddle_y, speedLeftPaddle)
-    drawLeftPaddle(leftPaddle_y)
+    #rightPaddle_y = movePaddleBySpeed(rightPaddle_y, speedRightPaddle)
+    #drawRightPaddle(rightPaddle_y)
+    #leftPaddle_y = movePaddleBySpeed(leftPaddle_y, speedLeftPaddle)
+    drawLeftPaddle(leftPaddle.y)
 
     pygame.draw.circle(screen, WHITE, (ball.x, ball.y), ball.dimension, 0)
 
