@@ -2,6 +2,7 @@ import pygame
 import random
 
 from Ball import Ball
+from Paddle import Paddle
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -34,12 +35,24 @@ pygame.display.set_caption("My very basic Pong game")
 done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
-# Speed in pixels per frame
-speedRightPaddle = 0
-speedLeftPaddle = 0
-# Current position
-rightPaddle_y = 200
-leftPaddle_y = 200
+
+rightPaddle = Paddle(
+                MAX_WIDTH - PADDLE_WIDTH,
+                200,
+                PADDLE_MIN_Y,
+                MAX_HEIGHT - PADDLE_HEIGHT,
+                PADDLE_HEIGHT,
+                PADDLE_WIDTH,
+                PADDLE_SPEED)
+
+leftPaddle = Paddle(
+                0,
+                200,
+                PADDLE_MIN_Y,
+                MAX_HEIGHT - PADDLE_HEIGHT,
+                PADDLE_HEIGHT,
+                PADDLE_WIDTH,
+                PADDLE_SPEED)
 
 ball = Ball(BALL_DIMENSION,
             10,
@@ -55,23 +68,6 @@ print("initial ball position ", ball.x, ball.y)
 
 def drawPaddle(topX, topY):
     pygame.draw.rect(screen, WHITE, [topX, topY, PADDLE_WIDTH, PADDLE_HEIGHT])
-
-def drawRightPaddle(topY):
-    drawPaddle(RIGHT_PADDLE_X, topY)
-
-def drawLeftPaddle(y):
-    drawPaddle(0, y)
-
-def movePaddleBySpeed(yCoord, speed):
-    yCoord += speed
-
-    if yCoord < PADDLE_MIN_Y:
-        yCoord = PADDLE_MIN_Y
-
-    if yCoord > PADDLE_MAX_Y:
-        yCoord = PADDLE_MAX_Y
-
-    return yCoord
 
 def drawMiddleLine():
     pygame.draw.line(screen, WHITE, [MAX_WIDTH / 2, 0], [MAX_WIDTH / 2, MAX_HEIGHT], 1)
@@ -89,22 +85,23 @@ while not done:
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
             done = True  # Flag that we are done so we exit this loop
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                speedRightPaddle = -PADDLE_SPEED
-            elif event.key == pygame.K_DOWN:
-                speedRightPaddle = PADDLE_SPEED
-            elif event.key == pygame.K_w:
-                speedLeftPaddle = -PADDLE_SPEED
-            elif event.key == pygame.K_s:
-                speedLeftPaddle = PADDLE_SPEED
-        elif event.type == pygame.KEYUP:
-            speedRightPaddle = 0
-            speedLeftPaddle = 0
+
+    keys = pygame.key.get_pressed()  # checking pressed keys
+    if keys[pygame.K_w]:
+        leftPaddle.moveUp()
+    if keys[pygame.K_s]:
+        leftPaddle.moveDown()
+    if keys[pygame.K_UP]:
+        rightPaddle.moveUp()
+    if keys[pygame.K_DOWN]:
+        rightPaddle.moveDown()
 
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
     screen.fill(BLACK)
+
+    drawPaddle(leftPaddle.x, leftPaddle.y)
+    drawPaddle(rightPaddle.x, rightPaddle.y)
 
     rightScoreTextSurface = myfont.render(str(scoreRight), True, WHITE)
     screen.blit(rightScoreTextSurface, (370, 10))
@@ -114,17 +111,12 @@ while not done:
 
     drawMiddleLine()
 
-    rightPaddle_y = movePaddleBySpeed(rightPaddle_y, speedRightPaddle)
-    drawRightPaddle(rightPaddle_y)
-    leftPaddle_y = movePaddleBySpeed(leftPaddle_y, speedLeftPaddle)
-    drawLeftPaddle(leftPaddle_y)
-
     pygame.draw.circle(screen, WHITE, (ball.x, ball.y), ball.dimension, 0)
 
     ball.move()
 
     if ball.hitsRightEdge():
-        if ball.isWithinVerticalBounds(rightPaddle_y, rightPaddle_y + PADDLE_HEIGHT):
+        if ball.isWithinVerticalBounds(rightPaddle.y, rightPaddle.getBottomY()):
             scoreRight += 1
         else:
             # winner - Left player
@@ -133,7 +125,7 @@ while not done:
             scoreRight = 0
 
     if ball.hitsLeftEdge():
-        if ball.isWithinVerticalBounds(leftPaddle_y, leftPaddle_y + PADDLE_HEIGHT):
+        if ball.isWithinVerticalBounds(leftPaddle.y, leftPaddle.getBottomY()):
             scoreLeft += 1
         else:
             print("Player 2 wins - restart")
