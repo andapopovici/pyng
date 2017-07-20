@@ -1,14 +1,17 @@
 import random
 import pygame
 
+import constants
 from Ball import Ball
 from Paddle import Paddle
-import constants
+from draw_utils import drawPaddle, drawMiddleLine, drawBall, drawScore
 
+# Init
 pygame.init()
 pygame.font.init()
 screen = pygame.display.set_mode(constants.SCREEN_SIZE)
 pygame.display.set_caption(constants.GAME_TITLE)
+font = pygame.font.SysFont(constants.FONT_TYPE, constants.SCORE_FONT_SIZE)
 
 rightPaddle = Paddle(
                 constants.RIGHT_PADDLE_X,
@@ -40,31 +43,19 @@ ball = Ball(constants.BALL_DIMENSION,
 
 print("initial ball position ", ball.x, ball.y)
 
-def drawPaddle(topX, topY):
-    pygame.draw.rect(screen, constants.WHITE, [topX, topY, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT])
-
-def drawMiddleLine():
-    pygame.draw.line(screen, constants.WHITE, [constants.SCREEN_MAX_WIDTH / 2, 0],
-                     [constants.SCREEN_MAX_WIDTH / 2, constants.SCREEN_MAX_HEIGHT])
-
 scoreRight = 0
 scoreLeft = 0
 
-myfont = pygame.font.SysFont(constants.FONT_TYPE, constants.SCORE_FONT_SIZE)
-
-# Loop until the user clicks the close button.
 done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
 while not done:
-    # --- Limit to 60 frames per second
-    clock.tick(60)
+    clock.tick(constants.FPS)
 
-    # --- Main event loop
-    for event in pygame.event.get():  # User did something
-        if event.type == pygame.QUIT:  # If user clicked close
-            done = True  # Flag that we are done so we exit this loop
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
 
     keys = pygame.key.get_pressed()  # checking pressed keys
     if keys[pygame.K_w]:
@@ -76,22 +67,15 @@ while not done:
     if keys[pygame.K_DOWN]:
         rightPaddle.moveDown()
 
-    # First, clear the screen to white. Don't put other drawing commands
-    # above this, or they will be erased with this command.
+    # Don't put other drawing commands above this, or they will be erased.
     screen.fill(constants.BLACK)
 
-    drawPaddle(leftPaddle.x, leftPaddle.y)
-    drawPaddle(rightPaddle.x, rightPaddle.y)
-
-    rightScoreTextSurface = myfont.render(str(scoreRight), True, constants.WHITE)
-    screen.blit(rightScoreTextSurface, (constants.LEFT_SCORE_X, constants.SCORE_Y))
-
-    leftScoreTextSurface = myfont.render(str(scoreLeft), True, constants.WHITE)
-    screen.blit(leftScoreTextSurface, (constants.RIGHT_SCORE_X, constants.SCORE_Y))
-
-    drawMiddleLine()
-
-    pygame.draw.circle(screen, constants.WHITE, (ball.x, ball.y), ball.dimension)
+    drawPaddle(screen, leftPaddle)
+    drawPaddle(screen, rightPaddle)
+    drawMiddleLine(screen)
+    drawBall(screen, ball)
+    drawScore(screen, font, scoreRight, constants.LEFT_SCORE_X)
+    drawScore(screen, font, scoreLeft, constants.RIGHT_SCORE_X)
 
     ball.move()
 
@@ -99,7 +83,6 @@ while not done:
         if ball.isWithinVerticalBounds(rightPaddle.y, rightPaddle.getBottomY()):
             scoreRight += 1
         else:
-            # winner - Left player
             print("Player 1 wins - restart")
             scoreLeft = 0
             scoreRight = 0
@@ -112,5 +95,4 @@ while not done:
             scoreLeft = 0
             scoreRight = 0
 
-    # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
