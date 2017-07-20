@@ -1,81 +1,61 @@
-import pygame
 import random
+import pygame
 
 from Ball import Ball
 from Paddle import Paddle
-# Define some colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-
-# screen dimensions
-MAX_WIDTH = 700
-MAX_HEIGHT = 500
-
-size = (MAX_WIDTH, MAX_HEIGHT)
-
-# Paddle constants
-PADDLE_WIDTH = 10
-PADDLE_HEIGHT = 90
-# the X coord of the right paddle
-RIGHT_PADDLE_X = MAX_WIDTH - PADDLE_WIDTH
-PADDLE_MIN_Y = 0
-PADDLE_MAX_Y = MAX_HEIGHT - PADDLE_HEIGHT
-# the speed with which we move the paddle
-PADDLE_SPEED = 5
-
-# Ball constants
-BALL_DIMENSION = 5
+import constants
 
 pygame.init()
 pygame.font.init()
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("My very basic Pong game")
+screen = pygame.display.set_mode(constants.SCREEN_SIZE)
+pygame.display.set_caption(constants.GAME_TITLE)
+
+rightPaddle = Paddle(
+                constants.RIGHT_PADDLE_X,
+                constants.PADDLE_Y,
+                constants.PADDLE_MIN_Y,
+                constants.PADDLE_MAX_Y,
+                constants.PADDLE_HEIGHT,
+                constants.PADDLE_WIDTH,
+                constants.PADDLE_SPEED)
+
+leftPaddle = Paddle(
+                constants.LEFT_PADDLE_X,
+                constants.PADDLE_Y,
+                constants.PADDLE_MIN_Y,
+                constants.PADDLE_MAX_Y,
+                constants.PADDLE_HEIGHT,
+                constants.PADDLE_WIDTH,
+                constants.PADDLE_SPEED)
+
+ball = Ball(constants.BALL_DIMENSION,
+            constants.BALL_X,
+            random.randint(constants.BALL_INITIAL_Y_RANGE[0], constants.BALL_INITIAL_Y_RANGE[1]),
+            constants.BALL_MIN_X,
+            constants.BALL_MAX_X,
+            constants.BALL_MIN_Y,
+            constants.BALL_MAX_Y,
+            constants.BALL_SPEED_X,
+            constants.BALL_SPEED_Y)
+
+print("initial ball position ", ball.x, ball.y)
+
+def drawPaddle(topX, topY):
+    pygame.draw.rect(screen, constants.WHITE, [topX, topY, constants.PADDLE_WIDTH, constants.PADDLE_HEIGHT])
+
+def drawMiddleLine():
+    pygame.draw.line(screen, constants.WHITE, [constants.SCREEN_MAX_WIDTH / 2, 0],
+                     [constants.SCREEN_MAX_WIDTH / 2, constants.SCREEN_MAX_HEIGHT])
+
+scoreRight = 0
+scoreLeft = 0
+
+myfont = pygame.font.SysFont(constants.FONT_TYPE, constants.SCORE_FONT_SIZE)
 
 # Loop until the user clicks the close button.
 done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
-
-rightPaddle = Paddle(
-                MAX_WIDTH - PADDLE_WIDTH,
-                200,
-                PADDLE_MIN_Y,
-                MAX_HEIGHT - PADDLE_HEIGHT,
-                PADDLE_HEIGHT,
-                PADDLE_WIDTH,
-                PADDLE_SPEED)
-
-leftPaddle = Paddle(
-                0,
-                200,
-                PADDLE_MIN_Y,
-                MAX_HEIGHT - PADDLE_HEIGHT,
-                PADDLE_HEIGHT,
-                PADDLE_WIDTH,
-                PADDLE_SPEED)
-
-ball = Ball(BALL_DIMENSION,
-            10,
-            random.randint(100, 350),
-            10,
-            MAX_WIDTH - PADDLE_WIDTH,
-            0,
-            MAX_HEIGHT - BALL_DIMENSION,
-            5,
-            5)
-
-print("initial ball position ", ball.x, ball.y)
-
-def drawPaddle(topX, topY):
-    pygame.draw.rect(screen, WHITE, [topX, topY, PADDLE_WIDTH, PADDLE_HEIGHT])
-
-def drawMiddleLine():
-    pygame.draw.line(screen, WHITE, [MAX_WIDTH / 2, 0], [MAX_WIDTH / 2, MAX_HEIGHT], 1)
-
-scoreRight = 0
-scoreLeft = 0
-
-myfont = pygame.font.SysFont('monospace', 30)
 
 while not done:
     # --- Limit to 60 frames per second
@@ -98,20 +78,20 @@ while not done:
 
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
-    screen.fill(BLACK)
+    screen.fill(constants.BLACK)
 
     drawPaddle(leftPaddle.x, leftPaddle.y)
     drawPaddle(rightPaddle.x, rightPaddle.y)
 
-    rightScoreTextSurface = myfont.render(str(scoreRight), True, WHITE)
-    screen.blit(rightScoreTextSurface, (370, 10))
+    rightScoreTextSurface = myfont.render(str(scoreRight), True, constants.WHITE)
+    screen.blit(rightScoreTextSurface, (constants.LEFT_SCORE_X, constants.SCORE_Y))
 
-    leftScoreTextSurface = myfont.render(str(scoreLeft), True, WHITE)
-    screen.blit(leftScoreTextSurface, (300, 10))
+    leftScoreTextSurface = myfont.render(str(scoreLeft), True, constants.WHITE)
+    screen.blit(leftScoreTextSurface, (constants.RIGHT_SCORE_X, constants.SCORE_Y))
 
     drawMiddleLine()
 
-    pygame.draw.circle(screen, WHITE, (ball.x, ball.y), ball.dimension, 0)
+    pygame.draw.circle(screen, constants.WHITE, (ball.x, ball.y), ball.dimension)
 
     ball.move()
 
