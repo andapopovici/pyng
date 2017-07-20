@@ -15,8 +15,11 @@ class Ball:
         self.y += self.changeY
 
         # Bounce the ball if needed
-        if self.hitsBottomEdge() or self.hitsTopEdge() or self.hitsRightEdge() or self.hitsLeftEdge():
+        if self.hitsBottomEdge() or self.hitsTopEdge():
             self.changeY *= -1
+
+        if self.hitsRightEdge() or self.hitsLeftEdge():
+            self.changeX *= -1
 
     def hitsRightEdge(self):
         return True if self.x > self.maxX else False
