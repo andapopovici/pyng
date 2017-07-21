@@ -4,6 +4,7 @@ import pygame
 import constants
 from Ball import Ball
 from Paddle import Paddle
+from GameState import GameState
 from draw_utils import drawPaddle, drawMiddleLine, drawBall, drawScore
 
 # Init
@@ -41,6 +42,7 @@ ball = Ball(constants.BALL_DIMENSION,
             constants.BALL_SPEED_X,
             constants.BALL_SPEED_Y)
 
+state = GameState()
 print("initial ball position ", ball.x, ball.y)
 
 scoreRight = 0
@@ -74,25 +76,23 @@ while not done:
     drawPaddle(screen, rightPaddle)
     drawMiddleLine(screen)
     drawBall(screen, ball)
-    drawScore(screen, font, scoreRight, constants.LEFT_SCORE_X)
-    drawScore(screen, font, scoreLeft, constants.RIGHT_SCORE_X)
+    drawScore(screen, font, state.scoreLeft, constants.LEFT_SCORE_X)
+    drawScore(screen, font, state.scoreRight, constants.RIGHT_SCORE_X)
 
     ball.move()
 
     if ball.hitsRightEdge():
         if ball.isWithinVerticalBounds(rightPaddle.y, rightPaddle.getBottomY()):
-            scoreRight += 1
+            state.incrementRightScore()
         else:
             print("Player 1 wins - restart")
-            scoreLeft = 0
-            scoreRight = 0
+            state.resetScores()
 
     if ball.hitsLeftEdge():
         if ball.isWithinVerticalBounds(leftPaddle.y, leftPaddle.getBottomY()):
-            scoreLeft += 1
+            state.incrementLeftScore()
         else:
             print("Player 2 wins - restart")
-            scoreLeft = 0
-            scoreRight = 0
+            state.resetScores()
 
     pygame.display.flip()
